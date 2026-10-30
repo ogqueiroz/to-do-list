@@ -70,24 +70,29 @@
         quanto o pressionamento da tecla "Enter" no teclado automaticamente!
       -->
       <form id="task-form" class="task-form" autocomplete="off">
-        <div class="form-row">
-          <!-- Campo de texto para descrição da tarefa -->
-          <div class="input-group text-input-group">
-            <label for="task-input" class="sr-only">Descrição da tarefa</label>
-            <input
-              type="text"
-              id="task-input"
-              class="task-input"
-              placeholder="O que você precisa fazer hoje?"
-              maxlength="120"
-              required
-            />
-          </div>
+        <!-- Campo principal: Descrição da tarefa -->
+        <div class="input-group text-input-group">
+          <label for="task-input" class="field-label">
+            <span>📝</span> Descrição da Tarefa:
+          </label>
+          <input
+            type="text"
+            id="task-input"
+            class="task-input"
+            placeholder="O que você precisa fazer hoje?"
+            maxlength="120"
+            required
+          />
+        </div>
 
+        <!-- Linha de configurações: Prioridade, Prazo e Botão de Adicionar -->
+        <div class="form-row-meta">
           <!-- Seleção de nível de prioridade (Baixa, Média, Alta) -->
           <div class="input-group priority-input-group">
-            <label for="task-priority" class="sr-only">Prioridade</label>
-            <select id="task-priority" class="task-priority" title="Nível de prioridade">
+            <label for="task-priority" class="field-label">
+              <span>🎯</span> Nível de Prioridade:
+            </label>
+            <select id="task-priority" class="task-priority" title="Selecione o nível de prioridade">
               <option value="baixa">🟢 Baixa</option>
               <option value="media" selected>🟡 Média</option>
               <option value="alta">🔴 Alta</option>
@@ -96,19 +101,23 @@
 
           <!-- Campo de Prazo de Entrega (Due Date) -->
           <div class="input-group date-input-group">
-            <label for="task-due-date" class="sr-only">Prazo de entrega</label>
+            <label for="task-due-date" class="field-label">
+              <span>📅</span> Prazo de Entrega:
+            </label>
             <input
               type="date"
               id="task-due-date"
               class="task-due-date"
-              title="Prazo de entrega (opcional)"
+              title="Selecione o prazo de entrega (opcional)"
             />
           </div>
 
           <!-- Botão de inclusão -->
-          <button type="submit" id="add-task-btn" class="btn-primary">
-            <span>+</span> Adicionar
-          </button>
+          <div class="input-group action-input-group">
+            <button type="submit" id="add-task-btn" class="btn-primary">
+              <span>+</span> Adicionar Tarefa
+            </button>
+          </div>
         </div>
       </form>
 
