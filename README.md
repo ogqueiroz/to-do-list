@@ -1,6 +1,5 @@
 # 📝 FocusFlow | Lista de Tarefas Inteligente & Didática
 
-> Uma aplicação web moderna, fluida e interativa de gerenciamento de tarefas, concebida para unir produtividade diária a boas práticas de desenvolvimento de software.
 
 ![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-green.svg)
 ![Linguagem: JavaScript](https://img.shields.io/badge/Linguagem-JavaScript%20(ES6%2B)-yellow.svg)
@@ -8,6 +7,7 @@
 ![Deploy: Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg)
 ![Evento: Imersão Alura & Google](https://img.shields.io/badge/Imers%C3%A3o-Alura%20%26%20Google-blue.svg)
 
+> Uma aplicação web moderna, fluida e interativa de gerenciamento de tarefas, concebida para unir produtividade diária a boas práticas de desenvolvimento de software.
 ---
 
 ## 💡 Sobre o Projeto
