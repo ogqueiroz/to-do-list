@@ -127,7 +127,7 @@ Este projeto está distribuído sob a licença **MIT**. Veja o arquivo `LICENSE`
 
 ## 🤝 Agradecimentos
 
-Um agradecimento especial à equipe da **Alura** e aos especialistas do **Google** por proporcionarem uma imersão de aprendizado prático de altíssimo nível, impulsionando a nova geração de engenharia de software com Inteligência Artificial.
+Um agradecimento especial à equipe da **Alura** e ao especialista do **Google** por proporcionarem uma imersão de aprendizado prático de altíssimo nível, impulsionando a nova geração de engenharia de software com Inteligência Artificial.
 
 ---
 
