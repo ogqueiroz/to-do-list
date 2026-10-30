@@ -1,0 +1,576 @@
+/* ==========================================================================
+   FOLHA DE ESTILOS - LISTA DE TAREFAS DIDÁTICA
+   Conceitos aplicados:
+   1. Variáveis CSS (Custom Properties) para gerenciar temas Claro e Escuro.
+   2. Layout fluido com Flexbox e Grid.
+   3. Transições suaves para melhor experiência de usuário (UX).
+   4. Classes utilitárias e design responsivo (Mobile-first).
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. VARIÁVEIS DE CORES E TEMA (Custom Properties)
+   Definimos o tema padrão (Claro) dentro da pseudo-classe :root.
+   Quando a classe '.dark-mode' for adicionada ao <body>, essas variáveis mudam!
+   -------------------------------------------------------------------------- */
+:root {
+  /* Cores de Fundo */
+  --bg-body: #f1f5f9;           /* Fundo da página (Slate suave) */
+  --bg-card: #ffffff;           /* Fundo dos cartões e elementos */
+  --bg-hover: #f8fafc;          /* Fundo ao passar o mouse */
+  --bg-input: #ffffff;          /* Fundo dos campos de entrada */
+
+  /* Cores de Texto */
+  --text-primary: #0f172a;      /* Texto principal de alto contraste */
+  --text-secondary: #64748b;    /* Texto secundário e legendas */
+  --text-muted: #94a3b8;        /* Texto desativado ou placeholders */
+
+  /* Bordas e Sombras */
+  --border-color: #e2e8f0;      /* Linhas e separadores suaves */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+
+  /* Cor de Destaque (Identidade do App) */
+  --primary-color: #4f46e5;     /* Roxo Índigo moderno */
+  --primary-hover: #4338ca;
+  --primary-light: #eef2ff;
+
+  /* Badges de Prioridades */
+  --priority-low-bg: #dcfce7;
+  --priority-low-text: #15803d;
+  --priority-medium-bg: #fef3c7;
+  --priority-medium-text: #b45309;
+  --priority-high-bg: #fee2e2;
+  --priority-high-text: #b91c1c;
+
+  /* Barra de Progresso e Ações */
+  --progress-track: #e2e8f0;
+  --progress-fill: #10b981;     /* Verde vibrante para sucesso/conclusão */
+  --danger-color: #ef4444;      /* Vermelho para exclusão */
+  --danger-hover: #dc2626;
+
+  /* Raio de Arredondamento */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Animações e Transições */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* --------------------------------------------------------------------------
+   2. TEMA ESCURO (Dark Mode)
+   Ao alternar a classe .dark-mode no <body> via JavaScript,
+   todas as variáveis são redefinidas automaticamente e tudo ganha novas cores!
+   -------------------------------------------------------------------------- */
+body.dark-mode {
+  --bg-body: #0b0f17;
+  --bg-card: #151d2a;
+  --bg-hover: #1c2637;
+  --bg-input: #101622;
+
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  --border-color: #243044;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+
+  --primary-color: #6366f1;
+  --primary-hover: #818cf8;
+  --primary-light: #1e1b4b;
+
+  --priority-low-bg: #064e3b;
+  --priority-low-text: #6ee7b7;
+  --priority-medium-bg: #78350f;
+  --priority-medium-text: #fde68a;
+  --priority-high-bg: #7f1d1d;
+  --priority-high-text: #fca5a5;
+
+  --progress-track: #1e293b;
+  --progress-fill: #34d399;
+}
+
+/* --------------------------------------------------------------------------
+   3. RESET BÁSICO E CONFIGURAÇÃO GLOBAL
+   Garante consistência entre diferentes navegadores.
+   -------------------------------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  line-height: 1.5;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Classe utilitária para leitores de tela (Acessibilidade) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* --------------------------------------------------------------------------
+   4. CONTAINER PRINCIPAL
+   -------------------------------------------------------------------------- */
+.app-container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. CABEÇALHO (Header)
+   -------------------------------------------------------------------------- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.app-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.header-title h1 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Botão de Tema */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.theme-toggle-btn:active {
+  transform: translateY(0);
+}
+
+.theme-icon {
+  font-size: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   6. SEÇÃO DE PROGRESSO DINÂMICO
+   -------------------------------------------------------------------------- */
+.progress-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.progress-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.progress-percentage {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--progress-fill);
+}
+
+/* Trilho e preenchimento da barra */
+.progress-track {
+  width: 100%;
+  height: 10px;
+  background-color: var(--progress-track);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--progress-fill);
+  border-radius: var(--radius-full);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.progress-summary {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   7. FORMULÁRIO DE CADASTRO
+   -------------------------------------------------------------------------- */
+.task-form {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.text-input-group {
+  flex: 1 1 240px;
+}
+
+.priority-input-group {
+  flex: 0 0 130px;
+}
+
+.task-input,
+.task-priority {
+  width: 100%;
+  height: 44px;
+  padding: 0 0.85rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.task-input:focus,
+.task-priority:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.task-priority {
+  cursor: pointer;
+}
+
+.btn-primary {
+  height: 44px;
+  padding: 0 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #ffffff;
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  box-shadow: var(--shadow-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   8. LISTA DE TAREFAS
+   -------------------------------------------------------------------------- */
+.tasks-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.tasks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tasks-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.counter-badge {
+  background-color: var(--primary-light);
+  color: var(--primary-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.task-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+/* Cartão individual da tarefa */
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background-color: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), opacity var(--transition-fast);
+  animation: slideIn 0.25s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.task-item-content {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  flex: 1;
+  min-width: 0; /* Previne estouro de texto com ellipsis */
+}
+
+/* Checkbox estilizado */
+.task-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-card);
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.task-checkbox:hover {
+  border-color: var(--primary-color);
+}
+
+.task-checkbox:checked {
+  background-color: var(--progress-fill);
+  border-color: var(--progress-fill);
+}
+
+.task-checkbox:checked::before {
+  content: "✔";
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* Texto da tarefa */
+.task-text {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  word-break: break-word;
+  transition: all var(--transition-fast);
+}
+
+/* Estilo para tarefa concluída */
+.task-item.completed {
+  opacity: 0.6;
+  background-color: var(--bg-card);
+}
+
+.task-item.completed .task-text {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+/* Agrupador de Prioridade + Ações */
+.task-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+/* Badges de prioridade */
+.priority-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+}
+
+.priority-badge.baixa {
+  background-color: var(--priority-low-bg);
+  color: var(--priority-low-text);
+}
+
+.priority-badge.media {
+  background-color: var(--priority-medium-bg);
+  color: var(--priority-medium-text);
+}
+
+.priority-badge.alta {
+  background-color: var(--priority-high-bg);
+  color: var(--priority-high-text);
+}
+
+/* Botão de excluir tarefa */
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.btn-delete:hover {
+  color: var(--danger-color);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* --------------------------------------------------------------------------
+   9. ESTADO VAZIO (Empty State)
+   -------------------------------------------------------------------------- */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.empty-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   10. RODAPÉ (Footer)
+   -------------------------------------------------------------------------- */
+.app-footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  padding: 1rem 0;
+}
+
+/* --------------------------------------------------------------------------
+   11. RESPONSIVIDADE (Mobile)
+   -------------------------------------------------------------------------- */
+@media (max-width: 520px) {
+  body {
+    padding: 1rem 0.75rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+  }
+
+  .priority-input-group,
+  .btn-primary {
+    width: 100%;
+  }
+
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .task-item-meta {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--border-color);
+  }
+}

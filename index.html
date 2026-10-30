@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lista de Tarefas Interativa</title>
+
+    <!-- Fonte moderna do Google Fonts (Inter) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Folha de estilos externa para manter o código limpo e desacoplado -->
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <!-- 
+      CONTAINER PRINCIPAL:
+      Centraliza a aplicação na tela e limita a largura máxima para boa leitura.
+    -->
+    <div class="app-container">
+      
+      <!-- CABEÇALHO DA APLICAÇÃO: Título e Botão de Alternância de Tema -->
+      <header class="app-header">
+        <div class="header-title">
+          <span class="app-icon">📝</span>
+          <h1>Minhas Tarefas</h1>
+        </div>
+
+        <!-- 
+          Botão para alternar entre Tema Claro e Escuro.
+          O ícone e o texto mudam dinamicamente via JavaScript.
+        -->
+        <button
+          id="theme-toggle"
+          class="theme-toggle-btn"
+          type="button"
+          aria-label="Alternar tema claro e escuro"
+          title="Alternar tema"
+        >
+          <span id="theme-icon" class="theme-icon">🌙</span>
+          <span id="theme-text" class="theme-text">Modo Escuro</span>
+        </button>
+      </header>
+
+      <!-- 
+        SEÇÃO DE PROGRESSO DINÂMICO:
+        Exibe visualmente a porcentagem de conclusão das tarefas cadastradas.
+      -->
+      <section class="progress-section" aria-label="Progresso das tarefas">
+        <div class="progress-info">
+          <span class="progress-label">Progresso das atividades</span>
+          <span id="progress-percentage" class="progress-percentage">0%</span>
+        </div>
+
+        <!-- Barra visual de progresso (trilho de fundo + preenchimento dinâmico) -->
+        <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div id="progress-bar" class="progress-bar" style="width: 0%"></div>
+        </div>
+
+        <p id="progress-summary" class="progress-summary">0 de 0 tarefas concluídas</p>
+      </section>
+
+      <!-- 
+        FORMULÁRIO DE CADASTRO DE TAREFAS:
+        Ouvir o evento 'submit' no <form> permite capturar tanto o clique no botão 
+        quanto o pressionamento da tecla "Enter" no teclado automaticamente!
+      -->
+      <form id="task-form" class="task-form" autocomplete="off">
+        <div class="form-row">
+          <!-- Campo de texto para descrição da tarefa -->
+          <div class="input-group text-input-group">
+            <label for="task-input" class="sr-only">Descrição da tarefa</label>
+            <input
+              type="text"
+              id="task-input"
+              class="task-input"
+              placeholder="O que você precisa fazer hoje?"
+              maxlength="120"
+              required
+            />
+          </div>
+
+          <!-- Seleção de nível de prioridade (Baixa, Média, Alta) -->
+          <div class="input-group priority-input-group">
+            <label for="task-priority" class="sr-only">Prioridade</label>
+            <select id="task-priority" class="task-priority">
+              <option value="baixa">🟢 Baixa</option>
+              <option value="media" selected>🟡 Média</option>
+              <option value="alta">🔴 Alta</option>
+            </select>
+          </div>
+
+          <!-- Botão de inclusão -->
+          <button type="submit" id="add-task-btn" class="btn-primary">
+            <span>+</span> Adicionar
+          </button>
+        </div>
+      </form>
+
+      <!-- 
+        LISTA DE TAREFAS:
+        Os itens <li> serão inseridos e removidos dinamicamente aqui pelo JavaScript.
+      -->
+      <main class="tasks-section">
+        <div class="tasks-header">
+          <h2>Lista de Atividades</h2>
+          <span id="tasks-count-badge" class="counter-badge">0</span>
+        </div>
+
+        <!-- Estado vazio: exibido quando não há tarefas cadastradas -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">✨</div>
+          <p class="empty-title">Nenhuma tarefa por aqui ainda!</p>
+          <p class="empty-subtitle">Adicione uma atividade acima para começar seu dia produtivo.</p>
+        </div>
+
+        <!-- Lista de itens (preenchida via JavaScript) -->
+        <ul id="task-list" class="task-list" aria-live="polite"></ul>
+      </main>
+
+      <!-- RODAPÉ DIDÁTICO -->
+      <footer class="app-footer">
+        <p>Projeto de estudos em JavaScript Puro (Vanilla) • Pronto para Vercel</p>
+      </footer>
+    </div>
+
+    <!-- Script principal carregado como módulo JavaScript moderno -->
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>
