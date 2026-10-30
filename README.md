@@ -71,30 +71,57 @@ to-do-list/
 ├── .gitignore        # Arquivos ignorados pelo controle de versão
 └── README.md         # Documentação completa do projeto
 ```
-💻 Como Executar o Projeto Localmente
-Pré-requisitos
-Certifique-se de ter o Node.js instalado em seu computador (versão 18 ou superior recomendada).
-Passo a Passo
-Clone o repositório:
-code
-Bash
+---
+
+## 💻 Como Executar o Projeto Localmente
+
+> 📌 **Pré-requisito:** Tenha o [Node.js](https://nodejs.org/) instalado em seu computador antes de começar.
+
+Siga o passo a passo abaixo pelo terminal do VS Code:
+
+### 1️⃣ Clonar o repositório
+```bash
 git clone https://github.com/SEU_USUARIO/SEU_REPOSITORIO.git
-Acesse a pasta do projeto:
-code
-Bash
+```
+
+### 2️⃣ Acessar a pasta do projeto
+```bash
 cd SEU_REPOSITORIO
-Instale as dependências:
-code
-Bash
+```
+
+### 3️⃣ Instalar as dependências
+```bash
 npm install
-Inicie o servidor de desenvolvimento local:
-code
-Bash
+```
+
+### 4️⃣ Iniciar o servidor local
+```bash
 npm run dev
-Abra no seu navegador:
-O terminal exibirá o endereço local (geralmente http://localhost:5173/). Acesse o link para interagir com o aplicativo!
-📄 Licença
-Este projeto está sob a licença MIT. Para mais detalhes, consulte o arquivo LICENSE incluído na raiz do projeto. Em suma, você é livre para usar, estudar, modificar e distribuir este software.
-🤝 Agradecimentos
-Agradecimento especial à Alura e ao Google pela realização da Imersão, incentivando o aprendizado contínuo, a engenharia com inteligência artificial e a democratização da tecnologia.
-Feito com dedicação durante a Imersão Alura & Google com IA.
+```
+
+### 5️⃣ Acessar no navegador
+Abra seu navegador e entre no endereço indicado pelo terminal:
+```text
+http://localhost:5173/
+```
+
+
+---
+
+## 📄 Licença
+
+Este projeto está distribuído sob a licença **MIT**. Veja o arquivo `LICENSE` para mais informações.
+
+> Em resumo: você tem total liberdade para usar, estudar, clonar, modificar e compartilhar este código.
+
+---
+
+## 🤝 Agradecimentos
+
+Um agradecimento especial à equipe da **Alura** e aos especialistas do **Google** por proporcionarem uma imersão de aprendizado prático de altíssimo nível, impulsionando a nova geração de engenharia de software com Inteligência Artificial.
+
+---
+
+<p align="center">
+  Desenvolvido com dedicação durante a <b>Imersão Alura & Google com IA</b>.
+</p>
