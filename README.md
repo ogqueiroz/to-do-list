@@ -2,14 +2,10 @@
 
 <div align="center">
 
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
-![Google](https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=google&logoColor=white)
-![Alura](https://img.shields.io/badge/Alura-002B49?style=for-the-badge&logo=alpinelinux&logoColor=white)
-![Licença MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-2ea44f?style=for-the-badge)
+<img src="https://img.shields.io/badge/JAVASCRIPT-ES6%2B-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black&labelColor=555555" alt="JavaScript ES6+" />
+<img src="https://img.shields.io/badge/IMERS%C3%83O-ALURA%20%26%20GOOGLE%20COM%20IA-0070F3?style=for-the-badge&logo=google&logoColor=white&labelColor=555555" alt="Imersão Alura & Google com IA" />
+<img src="https://img.shields.io/badge/DEPLOY-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=555555" alt="Deploy Vercel" />
+<img src="https://img.shields.io/badge/LICEN%C3%87A-MIT-7bb800?style=for-the-badge&labelColor=555555" alt="Licença MIT" />
 
 </div>
 
