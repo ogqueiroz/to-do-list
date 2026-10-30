@@ -87,11 +87,22 @@
           <!-- Seleção de nível de prioridade (Baixa, Média, Alta) -->
           <div class="input-group priority-input-group">
             <label for="task-priority" class="sr-only">Prioridade</label>
-            <select id="task-priority" class="task-priority">
+            <select id="task-priority" class="task-priority" title="Nível de prioridade">
               <option value="baixa">🟢 Baixa</option>
               <option value="media" selected>🟡 Média</option>
               <option value="alta">🔴 Alta</option>
             </select>
+          </div>
+
+          <!-- Campo de Prazo de Entrega (Due Date) -->
+          <div class="input-group date-input-group">
+            <label for="task-due-date" class="sr-only">Prazo de entrega</label>
+            <input
+              type="date"
+              id="task-due-date"
+              class="task-due-date"
+              title="Prazo de entrega (opcional)"
+            />
           </div>
 
           <!-- Botão de inclusão -->
@@ -102,8 +113,57 @@
       </form>
 
       <!-- 
+        BARRA DE CONTROLE: BUSCA EM TEMPO REAL E ABAS DE FILTRAGEM
+        Permite localizar tarefas por texto e alternar entre Todas, Pendentes e Concluídas.
+      -->
+      <section class="toolbar-section">
+        <!-- Campo de busca em tempo real -->
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input
+            type="search"
+            id="search-input"
+            class="search-input"
+            placeholder="Pesquisar tarefas em tempo real..."
+            aria-label="Pesquisar tarefas"
+          />
+        </div>
+
+        <!-- Abas de filtragem (Todas, Pendentes, Concluídas) com contadores -->
+        <div class="filter-tabs" role="tablist" aria-label="Filtro de tarefas">
+          <button
+            type="button"
+            class="filter-tab active"
+            data-filter="todas"
+            role="tab"
+            aria-selected="true"
+          >
+            Todas (<span id="count-all">0</span>)
+          </button>
+          <button
+            type="button"
+            class="filter-tab"
+            data-filter="pendentes"
+            role="tab"
+            aria-selected="false"
+          >
+            Pendentes (<span id="count-pending">0</span>)
+          </button>
+          <button
+            type="button"
+            class="filter-tab"
+            data-filter="concluidas"
+            role="tab"
+            aria-selected="false"
+          >
+            Concluídas (<span id="count-completed">0</span>)
+          </button>
+        </div>
+      </section>
+
+      <!-- 
         LISTA DE TAREFAS:
-        Os itens <li> serão inseridos e removidos dinamicamente aqui pelo JavaScript.
+        Os itens <li> serão inseridos e manipulados dinamicamente pelo JavaScript.
       -->
       <main class="tasks-section">
         <div class="tasks-header">
@@ -111,14 +171,21 @@
           <span id="tasks-count-badge" class="counter-badge">0</span>
         </div>
 
-        <!-- Estado vazio: exibido quando não há tarefas cadastradas -->
+        <!-- Estado vazio padrão: quando não há nenhuma tarefa cadastrada -->
         <div id="empty-state" class="empty-state">
           <div class="empty-icon">✨</div>
           <p class="empty-title">Nenhuma tarefa por aqui ainda!</p>
           <p class="empty-subtitle">Adicione uma atividade acima para começar seu dia produtivo.</p>
         </div>
 
-        <!-- Lista de itens (preenchida via JavaScript) -->
+        <!-- Estado de busca sem resultados: quando o filtro ou busca não encontra nada -->
+        <div id="no-results-state" class="empty-state" style="display: none;">
+          <div class="empty-icon">🔎</div>
+          <p class="empty-title">Nenhuma tarefa encontrada</p>
+          <p class="empty-subtitle">Tente outro termo de busca ou mude a aba de filtro.</p>
+        </div>
+
+        <!-- Lista de itens (gerada via JavaScript) -->
         <ul id="task-list" class="task-list" aria-live="polite"></ul>
       </main>
 
@@ -126,6 +193,57 @@
       <footer class="app-footer">
         <p>Projeto de estudos em JavaScript Puro (Vanilla) • Pronto para Vercel</p>
       </footer>
+    </div>
+
+    <!-- 
+      MODAL DE EDIÇÃO DE TAREFAS:
+      Permite ao usuário atualizar o texto, a prioridade e o prazo de entrega.
+    -->
+    <div id="edit-modal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="edit-modal-title">✏️ Editar Tarefa</h3>
+          <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Fechar janela">✕</button>
+        </div>
+
+        <form id="edit-form" class="modal-form" autocomplete="off">
+          <div class="modal-field">
+            <label for="edit-task-input">Descrição da Tarefa</label>
+            <input
+              type="text"
+              id="edit-task-input"
+              class="task-input"
+              maxlength="120"
+              required
+            />
+          </div>
+
+          <div class="modal-row">
+            <div class="modal-field">
+              <label for="edit-task-priority">Prioridade</label>
+              <select id="edit-task-priority" class="task-priority">
+                <option value="baixa">🟢 Baixa</option>
+                <option value="media">🟡 Média</option>
+                <option value="alta">🔴 Alta</option>
+              </select>
+            </div>
+
+            <div class="modal-field">
+              <label for="edit-task-due-date">Prazo de Entrega</label>
+              <input
+                type="date"
+                id="edit-task-due-date"
+                class="task-due-date"
+              />
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" id="modal-cancel-btn" class="btn-secondary">Cancelar</button>
+            <button type="submit" class="btn-primary">Salvar Alterações</button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Script principal carregado como módulo JavaScript moderno -->

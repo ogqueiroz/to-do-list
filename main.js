@@ -1,38 +1,40 @@
 /**
  * ==============================================================================
- * APLICAÇÃO DE LISTA DE TAREFAS (TO-DO LIST) DIDÁTICA
+ * APLICAÇÃO DE LISTA DE TAREFAS (TO-DO LIST) DIDÁTICA E PROFISSIONAL
  * ==============================================================================
  * 
- * Este arquivo contém toda a lógica em JavaScript Puro (Vanilla JS).
- * Aqui você vai aprender na prática:
- * 1. O que é o "Estado da Aplicação" e como estruturar dados em Arrays e Objetos.
- * 2. Como selecionar e manipular elementos da tela através da DOM (Document Object Model).
- * 3. Como escutar ações do usuário através de "Event Listeners" (cliques, envios de formulário).
- * 4. Como calcular porcentagens e atualizar a interface em tempo real.
- * 5. Como persistir dados no navegador do usuário utilizando o "localStorage".
+ * Funcionalidades integradas:
+ * 1. Persistência de Dados (LocalStorage) para Tarefas e Tema.
+ * 2. Abas de Filtragem ("Todas", "Pendentes", "Concluídas").
+ * 3. Busca em Tempo Real (Filtragem instantânea enquanto digita).
+ * 4. Prazos de Entrega (Due Date) com detecção automática de atraso.
+ * 5. Edição Completa de Tarefas (Texto, Prioridade e Prazo) via Modal.
+ * 6. Gamificação: Chuva de Confetes comemorativa ao atingir 100% de conclusão!
  * ==============================================================================
  */
 
+// Importação do pacote canvas-confetti instalado via npm
+import confetti from 'canvas-confetti';
+
 // ------------------------------------------------------------------------------
-// 1. ESTADO DA APLICAÇÃO (Application State)
+// 1. ESTADO DA APLICAÇÃO (State Management)
 // ------------------------------------------------------------------------------
-/**
- * O "Estado" é a memória viva do nosso aplicativo.
- * Em vez de tentar adivinhar o que está na tela lendo o HTML, nós guardamos
- * os dados em uma variável JavaScript (Array de Objetos).
- * 
- * Tentamos buscar as tarefas salvas anteriormente no navegador (localStorage).
- * Se não houver nada salvo, começamos com um array vazio [].
- */
 const STORAGE_KEY_TAREFAS = 'todo_app_tarefas';
 const STORAGE_KEY_TEMA = 'todo_app_tema';
 
+// Array central de tarefas em memória viva
 let tarefas = carregarTarefasDoStorage();
 
+// Estado dos filtros e busca
+let filtroAtual = 'todas'; // 'todas' | 'pendentes' | 'concluidas'
+let termoBusca = '';       // Texto digitado na barra de pesquisa
+
+// Guarda o ID da tarefa sendo editada no modal (null se nenhuma)
+let tarefaEmEdicaoId = null;
+
 /**
- * Função auxiliar que busca as tarefas no localStorage do navegador.
- * O localStorage só armazena texto, por isso usamos JSON.parse para converter
- * de volta para um Array de Objetos JavaScript.
+ * Carrega a lista de tarefas salva no localStorage do navegador.
+ * Transforma o texto JSON salvo de volta para um Array de Objetos JavaScript.
  */
 function carregarTarefasDoStorage() {
   const dadosSalvos = localStorage.getItem(STORAGE_KEY_TAREFAS);
@@ -40,7 +42,7 @@ function carregarTarefasDoStorage() {
     try {
       return JSON.parse(dadosSalvos);
     } catch (erro) {
-      console.error('Erro ao ler tarefas salvas:', erro);
+      console.error('Erro ao ler tarefas do localStorage:', erro);
       return [];
     }
   }
@@ -48,190 +50,356 @@ function carregarTarefasDoStorage() {
 }
 
 /**
- * Salva o estado atual da lista no localStorage.
- * Usamos JSON.stringify para transformar nosso Array de Objetos em texto.
+ * Salva a lista de tarefas atualizada no localStorage.
  */
 function salvarTarefasNoStorage() {
   localStorage.setItem(STORAGE_KEY_TAREFAS, JSON.stringify(tarefas));
 }
 
 // ------------------------------------------------------------------------------
-// 2. SELEÇÃO DE ELEMENTOS DO DOM (Document Object Model)
+// 2. SELEÇÃO DE ELEMENTOS DO DOM
 // ------------------------------------------------------------------------------
-/**
- * Usamos document.getElementById e document.querySelector para "pegar"
- * as referências dos elementos HTML que criamos no index.html.
- * Assim podemos ler seus valores ou alterar seus conteúdos via código.
- */
 
-// Formulário e campos de entrada
+// Formulário de Cadastro e Campos
 const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const taskPriority = document.getElementById('task-priority');
+const taskDueDate = document.getElementById('task-due-date');
 
-// Elementos da lista e contadores
+// Toolbar de Busca e Abas de Filtro
+const searchInput = document.getElementById('search-input');
+const filterTabs = document.querySelectorAll('.filter-tab');
+const countAllSpan = document.getElementById('count-all');
+const countPendingSpan = document.getElementById('count-pending');
+const countCompletedSpan = document.getElementById('count-completed');
+
+// Lista, Badges e Estados Vazios
 const taskList = document.getElementById('task-list');
 const emptyState = document.getElementById('empty-state');
+const noResultsState = document.getElementById('no-results-state');
 const tasksCountBadge = document.getElementById('tasks-count-badge');
 
-// Elementos da barra de progresso
+// Barra de Progresso
 const progressBar = document.getElementById('progress-bar');
 const progressPercentage = document.getElementById('progress-percentage');
 const progressSummary = document.getElementById('progress-summary');
 
-// Botão de alternar tema (Claro / Escuro)
+// Botão de Tema
 const themeToggleBtn = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
 const themeText = document.getElementById('theme-text');
 
+// Modal de Edição
+const editModal = document.getElementById('edit-modal');
+const editForm = document.getElementById('edit-form');
+const editTaskInput = document.getElementById('edit-task-input');
+const editTaskPriority = document.getElementById('edit-task-priority');
+const editTaskDueDate = document.getElementById('edit-task-due-date');
+const modalCloseBtn = document.getElementById('modal-close-btn');
+const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
 // ------------------------------------------------------------------------------
-// 3. REGRAS DE NEGÓCIO E MANIPULAÇÃO DE TAREFAS
+// 3. FUNÇÕES AUXILIARES DE DATAS E PRAZOS
 // ------------------------------------------------------------------------------
 
 /**
- * Adiciona uma nova tarefa ao array de estado.
- * @param {string} texto - A descrição da atividade.
- * @param {string} prioridade - Nível de prioridade ('baixa', 'media', 'alta').
+ * Retorna a data atual local no formato "YYYY-MM-DD" para comparação justa.
  */
-function adicionarTarefa(texto, prioridade) {
-  // Limpa espaços extras no início e fim do texto com .trim()
+function obterDataHojeFormatada() {
+  const hoje = new Date();
+  const ano = hoje.getFullYear();
+  const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+  const dia = String(hoje.getDate()).padStart(2, '0');
+  return `${ano}-${mes}-${dia}`;
+}
+
+/**
+ * Verifica se uma tarefa está atrasada.
+ * Uma tarefa é considerada atrasada se tiver prazo, não estiver concluída e
+ * sua data for anterior ao dia de hoje.
+ * 
+ * @param {string} dueDate - Prazo no formato "YYYY-MM-DD".
+ * @param {boolean} completed - Se a tarefa já foi concluída.
+ * @returns {boolean}
+ */
+function verificarAtraso(dueDate, completed) {
+  if (!dueDate || completed) return false;
+  const hoje = obterDataHojeFormatada();
+  return dueDate < hoje;
+}
+
+/**
+ * Converte data de "YYYY-MM-DD" para o formato brasileiro amigável "DD/MM/AAAA".
+ * @param {string} dateString
+ * @returns {string}
+ */
+function formatarDataBrasil(dateString) {
+  if (!dateString) return '';
+  const partes = dateString.split('-');
+  if (partes.length !== 3) return dateString;
+  const [ano, mes, dia] = partes;
+  return `${dia}/${mes}/${ano}`;
+}
+
+// ------------------------------------------------------------------------------
+// 4. GAMIFICAÇÃO: EFEITO DE CONFETES
+// ------------------------------------------------------------------------------
+/**
+ * Dispara uma animação comemorativa de confetes coloridos na tela
+ * quando o usuário completa 100% de suas atividades!
+ */
+function dispararConfetes() {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+}
+
+// ------------------------------------------------------------------------------
+// 5. REGRAS DE NEGÓCIO: ADICIONAR, MARCAR, EXCLUIR E EDITAR
+// ------------------------------------------------------------------------------
+
+/**
+ * Cria e adiciona uma nova tarefa.
+ * @param {string} texto - Nome da atividade.
+ * @param {string} prioridade - 'baixa', 'media' ou 'alta'.
+ * @param {string} dueDate - Prazo no formato 'YYYY-MM-DD' (opcional).
+ */
+function adicionarTarefa(texto, prioridade, dueDate) {
   const textoLimpo = texto.trim();
 
-  // Validação: não permitir adicionar tarefa vazia
+  // Validação: não permitir tarefa sem texto
   if (textoLimpo === '') {
-    alert('Por favor, digite o que você precisa fazer antes de adicionar!');
+    alert('Por favor, informe a descrição da tarefa antes de adicionar!');
     return;
   }
 
-  // Criamos um novo objeto que representa a tarefa
   const novaTarefa = {
-    // Geramos um identificador único usando o timestamp atual + número aleatório
-    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 5),
+    id: Date.now().toString(36) + Math.random().toString(36).substring(2, 6),
     text: textoLimpo,
-    priority: prioridade, // 'baixa', 'media' ou 'alta'
-    completed: false,     // Toda nova tarefa começa não concluída
+    priority: prioridade,
+    dueDate: dueDate || null,
+    completed: false,
     createdAt: new Date().toISOString()
   };
 
-  // Adicionamos a nova tarefa no início da lista para que apareça no topo
   tarefas.unshift(novaTarefa);
-
-  // Persistimos a mudança no navegador
   salvarTarefasNoStorage();
-
-  // Atualizamos a interface visual (DOM)
   renderizar();
 }
 
 /**
- * Alterna o estado de conclusão de uma tarefa (Feita <-> Não Feita).
- * @param {string} id - O identificador da tarefa clicada.
+ * Alterna entre concluída / pendente.
+ * Dispara confetes se a ação levar o progresso a 100%!
+ * @param {string} id
  */
 function alternarConclusaoTarefa(id) {
-  // Procuramos a tarefa no array pelo seu id único
+  let acabouDeConcluir = false;
+
   tarefas = tarefas.map((tarefa) => {
     if (tarefa.id === id) {
-      // Invertemos o valor booleano: true vira false, e false vira true
-      return { ...tarefa, completed: !tarefa.completed };
+      const novoStatus = !tarefa.completed;
+      if (novoStatus === true) {
+        acabouDeConcluir = true;
+      }
+      return { ...tarefa, completed: novoStatus };
     }
     return tarefa;
   });
 
   salvarTarefasNoStorage();
   renderizar();
+
+  // Verifica se o progresso atingiu 100% como resultado desta conclusão
+  if (acabouDeConcluir && tarefas.length > 0) {
+    const todasConcluidas = tarefas.every((t) => t.completed);
+    if (todasConcluidas) {
+      dispararConfetes();
+    }
+  }
 }
 
 /**
- * Remove uma tarefa da lista pelo seu identificador.
- * @param {string} id - O identificador da tarefa a ser excluída.
+ * Remove uma tarefa da lista.
+ * @param {string} id
  */
 function removerTarefa(id) {
-  // O método .filter() cria um novo array mantendo apenas as tarefas
-  // cujo id seja DIFERENTE do id que queremos remover.
   tarefas = tarefas.filter((tarefa) => tarefa.id !== id);
-
   salvarTarefasNoStorage();
   renderizar();
 }
 
+/**
+ * Abre o modal de edição preenchido com as informações atuais da tarefa.
+ * @param {string} id
+ */
+function abrirModalEdicao(id) {
+  const tarefa = tarefas.find((t) => t.id === id);
+  if (!tarefa) return;
+
+  tarefaEmEdicaoId = id;
+  editTaskInput.value = tarefa.text;
+  editTaskPriority.value = tarefa.priority;
+  editTaskDueDate.value = tarefa.dueDate || '';
+
+  editModal.classList.remove('hidden');
+  editTaskInput.focus();
+}
+
+/**
+ * Fecha o modal de edição e limpa o ID em edição.
+ */
+function fecharModalEdicao() {
+  editModal.classList.add('hidden');
+  tarefaEmEdicaoId = null;
+}
+
+/**
+ * Salva as alterações feitas no modal de edição.
+ */
+function salvarEdicao(texto, prioridade, dueDate) {
+  const textoLimpo = texto.trim();
+  if (textoLimpo === '') {
+    alert('A descrição da tarefa não pode ficar vazia!');
+    return;
+  }
+
+  tarefas = tarefas.map((tarefa) => {
+    if (tarefa.id === tarefaEmEdicaoId) {
+      return {
+        ...tarefa,
+        text: textoLimpo,
+        priority: prioridade,
+        dueDate: dueDate || null
+      };
+    }
+    return tarefa;
+  });
+
+  salvarTarefasNoStorage();
+  fecharModalEdicao();
+  renderizar();
+}
+
 // ------------------------------------------------------------------------------
-// 4. ATUALIZAÇÃO DA BARRA DE PROGRESSO DINÂMICA
+// 6. FILTRAGEM E BUSCA SIMULTÂNEAS
 // ------------------------------------------------------------------------------
 /**
- * Calcula a porcentagem de conclusão e atualiza os elementos visuais da barra.
+ * Retorna as tarefas filtradas combinando a aba atual com o termo de busca digitado.
+ * @returns {Array} tarefas que atendem a ambos os critérios.
  */
-function atualizarProgresso() {
-  const totalTarefas = tarefas.length;
+function obterTarefasFiltradas() {
+  return tarefas.filter((tarefa) => {
+    // 1. Filtro pela aba selecionada
+    let passaFiltroAba = true;
+    if (filtroAtual === 'pendentes') {
+      passaFiltroAba = !tarefa.completed;
+    } else if (filtroAtual === 'concluidas') {
+      passaFiltroAba = tarefa.completed;
+    }
 
-  // Se não houver tarefas, o progresso é 0%
-  if (totalTarefas === 0) {
+    // 2. Filtro pelo termo de busca em tempo real (não diferencia maiúsculas de minúsculas)
+    let passaBusca = true;
+    if (termoBusca !== '') {
+      passaBusca = tarefa.text.toLowerCase().includes(termoBusca);
+    }
+
+    return passaFiltroAba && passaBusca;
+  });
+}
+
+// ------------------------------------------------------------------------------
+// 7. ATUALIZAÇÃO DA BARRA DE PROGRESSO DINÂMICA
+// ------------------------------------------------------------------------------
+function atualizarProgresso() {
+  const total = tarefas.length;
+
+  if (total === 0) {
     progressBar.style.width = '0%';
     progressPercentage.textContent = '0%';
     progressSummary.textContent = '0 de 0 tarefas concluídas';
     return;
   }
 
-  // Contamos quantas tarefas possuem completed === true
-  const tarefasConcluidas = tarefas.filter((t) => t.completed).length;
+  const concluidas = tarefas.filter((t) => t.completed).length;
+  const porcentagem = Math.round((concluidas / total) * 100);
 
-  // Calculamos a porcentagem (arredondada para número inteiro)
-  const porcentagem = Math.round((tarefasConcluidas / totalTarefas) * 100);
-
-  // Atualizamos a largura da barra no CSS (efeito visual fluido!)
   progressBar.style.width = `${porcentagem}%`;
-
-  // Atualizamos os textos informativos
   progressPercentage.textContent = `${porcentagem}%`;
-  progressSummary.textContent = `${tarefasConcluidas} de ${totalTarefas} tarefa${
-    totalTarefas > 1 ? 's' : ''
-  } concluída${tarefasConcluidas > 1 ? 's' : ''}`;
+  progressSummary.textContent = `${concluidas} de ${total} tarefa${
+    total > 1 ? 's' : ''
+  } concluída${concluidas > 1 ? 's' : ''}`;
 }
 
 // ------------------------------------------------------------------------------
-// 5. RENDERIZAÇÃO DA INTERFACE (Render Loop)
+// 8. RENDERIZAÇÃO DA INTERFACE (Render Loop)
 // ------------------------------------------------------------------------------
-/**
- * A função renderizar() é o coração visual da aplicação.
- * Toda vez que o estado muda (adicionar, marcar, excluir), chamamos renderizar().
- * Ela sincroniza o que está na memória JavaScript com o que o usuário vê na tela.
- */
 function renderizar() {
-  // 1. Atualizamos a barra de progresso
+  // 1. Atualiza a barra de progresso
   atualizarProgresso();
 
-  // 2. Atualizamos o contador numérico de tarefas no cabeçalho
-  tasksCountBadge.textContent = tarefas.length;
+  // 2. Atualiza contadores numéricos nas abas de filtro
+  const totalTodas = tarefas.length;
+  const totalPendentes = tarefas.filter((t) => !t.completed).length;
+  const totalConcluidas = tarefas.filter((t) => t.completed).length;
 
-  // 3. Controle do "Estado Vazio"
-  if (tarefas.length === 0) {
+  countAllSpan.textContent = totalTodas;
+  countPendingSpan.textContent = totalPendentes;
+  countCompletedSpan.textContent = totalConcluidas;
+
+  // 3. Obtém o conjunto de tarefas visíveis conforme filtro e busca
+  const tarefasVisiveis = obterTarefasFiltradas();
+  tasksCountBadge.textContent = tarefasVisiveis.length;
+
+  // 4. Controle dos Estados Vazios
+  if (totalTodas === 0) {
     emptyState.style.display = 'block';
+    noResultsState.style.display = 'none';
     taskList.innerHTML = '';
     return;
   }
 
-  // Se há tarefas, escondemos a mensagem de lista vazia
   emptyState.style.display = 'none';
 
-  // 4. Limpamos a lista existente para redesenhar com os dados atualizados
+  if (tarefasVisiveis.length === 0) {
+    noResultsState.style.display = 'block';
+    taskList.innerHTML = '';
+    return;
+  }
+
+  noResultsState.style.display = 'none';
+
+  // 5. Injeta os cartões no HTML
   taskList.innerHTML = '';
 
-  // 5. Criamos o HTML de cada tarefa dinamicamente
-  tarefas.forEach((tarefa) => {
-    // Cria o elemento <li>
-    const li = document.createElement('li');
-    li.className = `task-item ${tarefa.completed ? 'completed' : ''}`;
-    li.dataset.id = tarefa.id; // Guarda o id no atributo data-id do HTML
+  tarefasVisiveis.forEach((tarefa) => {
+    const isAtrasada = verificarAtraso(tarefa.dueDate, tarefa.completed);
 
-    // Define o texto amigável da prioridade
+    const li = document.createElement('li');
+    li.className = `task-item ${tarefa.completed ? 'completed' : ''} ${
+      isAtrasada ? 'is-overdue' : ''
+    }`;
+    li.dataset.id = tarefa.id;
+
     const prioridadeLabels = {
       baixa: 'Baixa',
       media: 'Média',
       alta: 'Alta'
     };
-
     const prioridadeFormatada = prioridadeLabels[tarefa.priority] || 'Média';
 
-    // Montamos o conteúdo interno com segurança
+    // Badge de prazo (se houver prazo definido)
+    let prazoHtml = '';
+    if (tarefa.dueDate) {
+      const dataFormatada = formatarDataBrasil(tarefa.dueDate);
+      if (isAtrasada) {
+        prazoHtml = `<span class="due-badge overdue" title="Tarefa atrasada! Prazo era ${dataFormatada}">⚠️ Atrasada (${dataFormatada})</span>`;
+      } else {
+        prazoHtml = `<span class="due-badge" title="Prazo de entrega">📅 ${dataFormatada}</span>`;
+      }
+    }
+
     li.innerHTML = `
       <div class="task-item-content">
         <input
@@ -243,7 +411,16 @@ function renderizar() {
         <span class="task-text"></span>
       </div>
       <div class="task-item-meta">
+        ${prazoHtml}
         <span class="priority-badge ${tarefa.priority}">${prioridadeFormatada}</span>
+        <button
+          type="button"
+          class="btn-edit"
+          aria-label="Editar tarefa"
+          title="Editar tarefa"
+        >
+          ✏️
+        </button>
         <button
           type="button"
           class="btn-delete"
@@ -255,22 +432,17 @@ function renderizar() {
       </div>
     `;
 
-    // Inserimos o texto da tarefa via textContent para prevenir vulnerabilidades (XSS)
-    const taskTextSpan = li.querySelector('.task-text');
-    taskTextSpan.textContent = tarefa.text;
+    // Inserção segura do texto para evitar XSS
+    const textSpan = li.querySelector('.task-text');
+    textSpan.textContent = tarefa.text;
 
-    // Adicionamos o item <li> dentro da lista <ul> no HTML
     taskList.appendChild(li);
   });
 }
 
 // ------------------------------------------------------------------------------
-// 6. GERENCIAMENTO DE TEMA (CLARO / ESCURO)
+// 9. GERENCIAMENTO DE TEMA (CLARO / ESCURO)
 // ------------------------------------------------------------------------------
-/**
- * Aplica o tema visual selecionado e atualiza os textos/ícones correspondentes.
- * @param {boolean} isDark - Se verdadeiro, ativa o modo escuro.
- */
 function aplicarTema(isDark) {
   if (isDark) {
     document.body.classList.add('dark-mode');
@@ -285,70 +457,91 @@ function aplicarTema(isDark) {
   }
 }
 
-/**
- * Inicializa o tema baseado na preferência salva no localStorage
- * ou na preferência do sistema operacional do usuário.
- */
 function inicializarTema() {
   const temaSalvo = localStorage.getItem(STORAGE_KEY_TEMA);
-
   if (temaSalvo) {
     aplicarTema(temaSalvo === 'dark');
   } else {
-    // Detecta se o sistema do usuário prefere tema escuro por padrão
     const prefereEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
     aplicarTema(prefereEscuro);
   }
 }
 
 // ------------------------------------------------------------------------------
-// 7. ESCUTA DE EVENTOS (Event Listeners)
+// 10. ESCUTA DE EVENTOS (Event Listeners)
 // ------------------------------------------------------------------------------
 
 /**
- * Ouvinte do Formulário de Cadastro:
- * O evento 'submit' é disparado tanto ao clicar no botão "Adicionar" quanto
- * ao pressionar a tecla "Enter" enquanto o cursor estiver dentro do campo de texto!
+ * 1. Formulário de Cadastro:
+ * Suporta clique no botão e tecla "Enter" no campo de texto.
  */
 taskForm.addEventListener('submit', (evento) => {
-  // Previne o comportamento padrão do navegador de recarregar a página ao enviar form
   evento.preventDefault();
 
   const texto = taskInput.value;
   const prioridade = taskPriority.value;
+  const dueDate = taskDueDate.value;
 
-  // Chama nossa função de negócio
-  adicionarTarefa(texto, prioridade);
+  adicionarTarefa(texto, prioridade, dueDate);
 
-  // Limpa o campo de texto e devolve o foco a ele para agilizar a digitação
+  // Reseta os campos e foca para a próxima digitação
   taskInput.value = '';
+  taskDueDate.value = '';
   taskInput.focus();
 });
 
 /**
- * Delegação de Eventos na Lista de Tarefas:
- * Em vez de adicionar um evento para cada botão de cada tarefa (o que consumiria
- * mais memória), ouvimos os cliques diretamente no elemento pai (<ul>) e
- * identificamos qual botão filho foi clicado através de 'evento.target'.
+ * 2. Busca em Tempo Real:
+ * O evento 'input' dispara a cada caractere digitado ou apagado.
+ */
+searchInput.addEventListener('input', (evento) => {
+  termoBusca = evento.target.value.trim().toLowerCase();
+  renderizar();
+});
+
+/**
+ * 3. Abas de Filtragem:
+ * Alterna a aba ativa e re-renderiza a lista filtrada.
+ */
+filterTabs.forEach((tab) => {
+  tab.addEventListener('click', () => {
+    filterTabs.forEach((btn) => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-selected', 'false');
+    });
+
+    tab.classList.add('active');
+    tab.setAttribute('aria-selected', 'true');
+    filtroAtual = tab.dataset.filter;
+
+    renderizar();
+  });
+});
+
+/**
+ * 4. Delegação de Eventos na Lista (Checkbox, Editar e Excluir):
  */
 taskList.addEventListener('click', (evento) => {
   const target = evento.target;
-
-  // Encontra o item <li> mais próximo do clique
   const taskItem = target.closest('.task-item');
   if (!taskItem) return;
 
   const id = taskItem.dataset.id;
 
-  // Caso 1: Usuário clicou no checkbox de conclusão
+  // Ação: Checkbox de Conclusão
   if (target.classList.contains('task-checkbox')) {
     alternarConclusaoTarefa(id);
     return;
   }
 
-  // Caso 2: Usuário clicou no botão de exclusão (🗑️)
+  // Ação: Botão de Edição (✏️)
+  if (target.classList.contains('btn-edit') || target.closest('.btn-edit')) {
+    abrirModalEdicao(id);
+    return;
+  }
+
+  // Ação: Botão de Exclusão (🗑️)
   if (target.classList.contains('btn-delete') || target.closest('.btn-delete')) {
-    // Animação suave antes de remover
     taskItem.style.opacity = '0';
     taskItem.style.transform = 'translateX(20px)';
     setTimeout(() => {
@@ -358,18 +551,44 @@ taskList.addEventListener('click', (evento) => {
 });
 
 /**
- * Ouvinte do Botão de Alternância de Tema:
- * Alterna entre tema claro e escuro a cada clique.
+ * 5. Eventos do Modal de Edição:
+ */
+editForm.addEventListener('submit', (evento) => {
+  evento.preventDefault();
+  salvarEdicao(
+    editTaskInput.value,
+    editTaskPriority.value,
+    editTaskDueDate.value
+  );
+});
+
+modalCloseBtn.addEventListener('click', fecharModalEdicao);
+modalCancelBtn.addEventListener('click', fecharModalEdicao);
+
+// Fechar modal ao clicar fora do cartão (no backdrop)
+editModal.addEventListener('click', (evento) => {
+  if (evento.target === editModal) {
+    fecharModalEdicao();
+  }
+});
+
+// Fechar modal ao pressionar a tecla "Escape"
+window.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape' && !editModal.classList.contains('hidden')) {
+    fecharModalEdicao();
+  }
+});
+
+/**
+ * 6. Botão de Alternância de Tema:
  */
 themeToggleBtn.addEventListener('click', () => {
   const isDarkModeAtivo = document.body.classList.contains('dark-mode');
-  // Se está ativo, vamos desativar (!isDarkModeAtivo). Se não, vamos ativar.
   aplicarTema(!isDarkModeAtivo);
 });
 
 // ------------------------------------------------------------------------------
-// 8. INICIALIZAÇÃO DA APLICAÇÃO
+// 11. INICIALIZAÇÃO
 // ------------------------------------------------------------------------------
-// Configura o tema salvo e desenha as tarefas na tela na primeira carga
 inicializarTema();
 renderizar();
