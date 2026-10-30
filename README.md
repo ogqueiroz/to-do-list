@@ -2,9 +2,10 @@
 
 <div align="center">
 
+<img src="https://img.shields.io/badge/HTML-5-E34F26?style=for-the-badge&logo=html5&logoColor=white&labelColor=555555" alt="HTML5" />
+<img src="https://img.shields.io/badge/CSS-3-1572B6?style=for-the-badge&logo=css3&logoColor=white&labelColor=555555" alt="CSS3" />
 <img src="https://img.shields.io/badge/JAVASCRIPT-ES6%2B-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black&labelColor=555555" alt="JavaScript ES6+" />
 <img src="https://img.shields.io/badge/IMERS%C3%83O-ALURA%20%26%20GOOGLE%20COM%20IA-0070F3?style=for-the-badge&logo=google&logoColor=white&labelColor=555555" alt="Imersão Alura & Google com IA" />
-<img src="https://img.shields.io/badge/DEPLOY-VERCEL-000000?style=for-the-badge&logo=vercel&logoColor=white&labelColor=555555" alt="Deploy Vercel" />
 <img src="https://img.shields.io/badge/LICEN%C3%87A-MIT-7bb800?style=for-the-badge&labelColor=555555" alt="Licença MIT" />
 
 </div>
