@@ -12,6 +12,13 @@
 > Uma aplicação web moderna, fluida e interativa de gerenciamento de tarefas, concebida para unir produtividade diária a boas práticas de desenvolvimento de software.
 ---
 
+https://to-do-list-nine-blush-31.vercel.app/ <-- [Abra para testar a Lista de Tarefas]
+
+<img width="807" height="869" alt="image" src="https://github.com/user-attachments/assets/f5da4d4d-a130-4764-889a-19de4d41d950" />
+
+
+
+
 ## 💡 Sobre o Projeto
 
 Este projeto consiste em uma **Lista de Tarefas (To-Do List)** desenvolvida com foco em usabilidade, design moderno e código limpo. O aplicativo permite acompanhar atividades em tempo real, categorizá-las por níveis de prioridade, monitorar a taxa de conclusão através de uma barra de progresso visual e alternar entre os temas claro e escuro.
