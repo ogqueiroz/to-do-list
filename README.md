@@ -15,7 +15,7 @@
 
 https://to-do-list-nine-blush-31.vercel.app/ <-- [Abra para testar a Lista de Tarefas]
 
-<img width="749" height="790" alt="image" src="https://github.com/user-attachments/assets/583c6533-f671-40d7-84a7-5ea65f4750c8" />
+<img width="807" height="805" alt="image" src="https://github.com/user-attachments/assets/0709d53e-df7b-4e20-a73a-fab5a2c80451" />
 
 
 
