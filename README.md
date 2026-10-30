@@ -1,4 +1,4 @@
-# 📝 FocusFlow | Lista de Tarefas Inteligente & Didática
+# 📝 FocoCerto | Lista de Tarefas Inteligente & Didática
 
 <div align="center">
 
