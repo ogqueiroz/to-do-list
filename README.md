@@ -1,11 +1,17 @@
 # 📝 FocusFlow | Lista de Tarefas Inteligente & Didática
 
+<div align="center">
 
-![Licença: MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-green.svg)
-![Linguagem: JavaScript](https://img.shields.io/badge/Linguagem-JavaScript%20(ES6%2B)-yellow.svg)
-![Ferramenta: Vite](https://img.shields.io/badge/Build-Vite-646CFF.svg)
-![Deploy: Vercel](https://img.shields.io/badge/Deploy-Vercel-black.svg)
-![Evento: Imersão Alura & Google](https://img.shields.io/badge/Imers%C3%A3o-Alura%20%26%20Google-blue.svg)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
+![Google](https://img.shields.io/badge/Google-4285F4?style=for-the-badge&logo=google&logoColor=white)
+![Alura](https://img.shields.io/badge/Alura-002B49?style=for-the-badge&logo=alpinelinux&logoColor=white)
+![Licença MIT](https://img.shields.io/badge/Licen%C3%A7a-MIT-2ea44f?style=for-the-badge)
+
+</div>
 
 > Uma aplicação web moderna, fluida e interativa de gerenciamento de tarefas, concebida para unir produtividade diária a boas práticas de desenvolvimento de software.
 ---
